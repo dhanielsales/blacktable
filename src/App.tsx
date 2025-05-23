@@ -3,6 +3,7 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { a } from "@react-spring/three";
 import * as THREE from "three";
+import { Card } from "./components/Card";
 
 type CameraOptions = "lookAtTable" | "lookAtCenter";
 
@@ -42,37 +43,6 @@ const cameraPositions: [number, number, number][] = pentagonAngles.map(
   }
 );
 
-function Card({
-  rotation = [0, 0, 0],
-  position = [0, 1.35, 0],
-  onDoubleClick,
-}: {
-  rotation?: [number, number, number];
-  position?: [number, number, number];
-  onDoubleClick?: () => void;
-}) {
-  return (
-    <a.mesh
-      position={position}
-      rotation={rotation}
-      onDoubleClick={onDoubleClick}
-      castShadow
-      receiveShadow
-    >
-      <boxGeometry args={[CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS]} />
-      {/* Front */}
-      <meshStandardMaterial attach="material-0" color="#f5f5dc" side={2} />
-      {/* Back */}
-      <meshStandardMaterial attach="material-1" color="#2a4d69" side={2} />
-      {/* Sides */}
-      <meshStandardMaterial attach="material-2" color="#888" />
-      <meshStandardMaterial attach="material-3" color="#888" />
-      <meshStandardMaterial attach="material-4" color="#888" />
-      <meshStandardMaterial attach="material-5" color="#888" />
-    </a.mesh>
-  );
-}
-
 function Table({
   position,
   rotation,
@@ -85,7 +55,7 @@ function Table({
   return (
     <RigidBody type="fixed" position={position} rotation={rotation}>
       <Card
-        rotation={[-Math.PI / 2, 0, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
         position={[0, TABLE_HEIGHT / 2 + CARD_THICKNESS / 2 + 0.01, 0]}
         onDoubleClick={onCardDoubleClick}
       />
