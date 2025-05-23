@@ -16,7 +16,9 @@ const TABLE_RADIUS = 20;
 const CAMERA_RADIUS = 30;
 const CAMERA_HEIGHT = 12;
 const TABLE_HEIGHT = 0.2;
-const CARD_THICKNESS = 0.001;
+const CARD_WIDTH = 8.95;
+const CARD_HEIGHT = 12.5;
+const CARD_THICKNESS = 0.05;
 
 const pentagonAngles = [0, 72, 144, 216, 288];
 const tablePositions: [number, number, number][] = pentagonAngles.map((deg) => {
@@ -61,7 +63,7 @@ function Card({
       castShadow
       receiveShadow
     >
-      <boxGeometry args={[1.5, 2.5, 0.001]} />
+      <boxGeometry args={[CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS]} />
       {/* Front */}
       <meshStandardMaterial attach="material-0" color="#f5f5dc" side={2} />
       {/* Back */}
