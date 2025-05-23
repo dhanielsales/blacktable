@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { useSpring, a } from "@react-spring/three";
+import * as THREE from "three";
 
 type CameraOptions = "lookAtTable" | "lookAtCenter";
 
@@ -103,15 +104,23 @@ function CameraController({
   cameraOption: CameraOptions;
 }) {
   const { camera } = useThree();
-  const spring = useSpring({
-    to: { pos: position },
-    config: { mass: 1, tension: 120, friction: 24 },
-  });
+  const target = CAMERA_SETTINGS[cameraOption];
+  const desired = useRef(new THREE.Vector3(...position));
+  const lookAt = useRef(new THREE.Vector3(...target));
+  const lookAtTarget = useRef(new THREE.Vector3(...target));
+
+  useEffect(() => {
+    desired.current.set(...position);
+  }, [position]);
+
+  useEffect(() => {
+    lookAtTarget.current.set(...CAMERA_SETTINGS[cameraOption]);
+  }, [cameraOption]);
 
   useFrame(() => {
-    const val = spring.pos.get();
-    camera.position.set(val[0], val[1], val[2]);
-    camera.lookAt(...CAMERA_SETTINGS[cameraOption]);
+    camera.position.lerp(desired.current, 0.08);
+    lookAt.current.lerp(lookAtTarget.current, 0.08);
+    camera.lookAt(lookAt.current);
   });
 
   return null;
@@ -166,7 +175,7 @@ function App() {
       </button>
 
       <Canvas
-        camera={{ position: cameraPositions[playerIndex], fov: 50 }}
+        camera={{ position: cameraPositions[playerIndex], fov: 55 }}
         shadows
       >
         <ambientLight intensity={0.7} />
