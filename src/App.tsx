@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { a } from "@react-spring/three";
@@ -107,8 +107,12 @@ function CameraController({
   lookAt?: [number, number, number];
 }) {
   const { camera } = useThree();
-  const target =
-    lookAt || (cameraOption ? CAMERA_SETTINGS[cameraOption] : [0, 0, 0]);
+  const target = useMemo(
+    () =>
+      (lookAt as [number, number, number]) ||
+      (cameraOption ? CAMERA_SETTINGS[cameraOption] : [0, 0, 0]),
+    [lookAt, cameraOption]
+  );
   const desired = useRef(new THREE.Vector3(...position));
   const lookAtVec = useRef(new THREE.Vector3(...target));
   const lookAtTarget = useRef(new THREE.Vector3(...target));
@@ -136,7 +140,6 @@ function App() {
     useState<CameraOptions>("lookAtTable");
   const [zoomedCardIndex, setZoomedCardIndex] = useState<number | null>(null);
 
-  // Camera position for zoomed card (vertical above the card)
   const zoomedCameraPos =
     zoomedCardIndex !== null
       ? ([
@@ -145,7 +148,6 @@ function App() {
           tablePositions[zoomedCardIndex][2],
         ] as [number, number, number])
       : cameraPositions[playerIndex];
-  // Camera lookAt for zoomed card (center of the card)
   const zoomedLookAt =
     zoomedCardIndex !== null
       ? ([
@@ -155,7 +157,6 @@ function App() {
         ] as [number, number, number])
       : CAMERA_SETTINGS[cameraOption];
 
-  // Handler for background click
   function handleCanvasPointerMissed() {
     if (zoomedCardIndex !== null) setZoomedCardIndex(null);
   }
