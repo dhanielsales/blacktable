@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
-import { useSpring, a } from "@react-spring/three";
+import { a } from "@react-spring/three";
 import * as THREE from "three";
 
 type CameraOptions = "lookAtTable" | "lookAtCenter";
@@ -16,8 +16,8 @@ const TABLE_RADIUS = 20;
 const CAMERA_RADIUS = 30;
 const CAMERA_HEIGHT = 12;
 const TABLE_HEIGHT = 0.2;
-const CARD_WIDTH = 8.95;
-const CARD_HEIGHT = 12.5;
+const CARD_WIDTH = 0.895;
+const CARD_HEIGHT = 1.25;
 const CARD_THICKNESS = 0.05;
 
 const pentagonAngles = [0, 72, 144, 216, 288];
@@ -45,21 +45,17 @@ const cameraPositions: [number, number, number][] = pentagonAngles.map(
 function Card({
   rotation = [0, 0, 0],
   position = [0, 1.35, 0],
+  onDoubleClick,
 }: {
   rotation?: [number, number, number];
   position?: [number, number, number];
+  onDoubleClick?: () => void;
 }) {
-  const [flipped, setFlipped] = useState(false);
-  const { rotationY } = useSpring({
-    rotationY: flipped ? Math.PI : 0,
-    config: { mass: 1, tension: 200, friction: 30 },
-  });
   return (
     <a.mesh
       position={position}
       rotation={rotation}
-      onClick={() => setFlipped((f) => !f)}
-      rotation-y={rotationY}
+      onDoubleClick={onDoubleClick}
       castShadow
       receiveShadow
     >
@@ -80,15 +76,18 @@ function Card({
 function Table({
   position,
   rotation,
+  onCardDoubleClick,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
+  onCardDoubleClick?: () => void;
 }) {
   return (
     <RigidBody type="fixed" position={position} rotation={rotation}>
       <Card
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, TABLE_HEIGHT / 2 + CARD_THICKNESS / 2 + 0.01, 0]}
+        onDoubleClick={onCardDoubleClick}
       />
       <mesh receiveShadow>
         <boxGeometry args={[TABLE_SIZE, 0.1, TABLE_SIZE / 2]} />
@@ -101,14 +100,17 @@ function Table({
 function CameraController({
   position,
   cameraOption,
+  lookAt,
 }: {
   position: [number, number, number];
-  cameraOption: CameraOptions;
+  cameraOption?: CameraOptions;
+  lookAt?: [number, number, number];
 }) {
   const { camera } = useThree();
-  const target = CAMERA_SETTINGS[cameraOption];
+  const target =
+    lookAt || (cameraOption ? CAMERA_SETTINGS[cameraOption] : [0, 0, 0]);
   const desired = useRef(new THREE.Vector3(...position));
-  const lookAt = useRef(new THREE.Vector3(...target));
+  const lookAtVec = useRef(new THREE.Vector3(...target));
   const lookAtTarget = useRef(new THREE.Vector3(...target));
 
   useEffect(() => {
@@ -116,13 +118,13 @@ function CameraController({
   }, [position]);
 
   useEffect(() => {
-    lookAtTarget.current.set(...CAMERA_SETTINGS[cameraOption]);
-  }, [cameraOption]);
+    lookAtTarget.current.set(...target);
+  }, [target]);
 
   useFrame(() => {
     camera.position.lerp(desired.current, 0.08);
-    lookAt.current.lerp(lookAtTarget.current, 0.08);
-    camera.lookAt(lookAt.current);
+    lookAtVec.current.lerp(lookAtTarget.current, 0.08);
+    camera.lookAt(lookAtVec.current);
   });
 
   return null;
@@ -132,6 +134,31 @@ function App() {
   const [playerIndex, setPlayerIndex] = useState(0);
   const [cameraOption, setCameraOption] =
     useState<CameraOptions>("lookAtTable");
+  const [zoomedCardIndex, setZoomedCardIndex] = useState<number | null>(null);
+
+  // Camera position for zoomed card (vertical above the card)
+  const zoomedCameraPos =
+    zoomedCardIndex !== null
+      ? ([
+          tablePositions[zoomedCardIndex][0],
+          5, // height above the card
+          tablePositions[zoomedCardIndex][2],
+        ] as [number, number, number])
+      : cameraPositions[playerIndex];
+  // Camera lookAt for zoomed card (center of the card)
+  const zoomedLookAt =
+    zoomedCardIndex !== null
+      ? ([
+          tablePositions[zoomedCardIndex][0],
+          TABLE_HEIGHT / 2 + CARD_THICKNESS / 2,
+          tablePositions[zoomedCardIndex][2],
+        ] as [number, number, number])
+      : CAMERA_SETTINGS[cameraOption];
+
+  // Handler for background click
+  function handleCanvasPointerMissed() {
+    if (zoomedCardIndex !== null) setZoomedCardIndex(null);
+  }
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#222" }}>
@@ -150,6 +177,7 @@ function App() {
           cursor: "pointer",
         }}
         onClick={() => setPlayerIndex((i) => (i + 1) % cameraPositions.length)}
+        disabled={zoomedCardIndex !== null}
       >
         Switch Player ({playerIndex + 1}/5)
       </button>
@@ -172,24 +200,32 @@ function App() {
             prev === "lookAtCenter" ? "lookAtTable" : "lookAtCenter"
           )
         }
+        disabled={zoomedCardIndex !== null}
       >
         Switch Camera
       </button>
 
       <Canvas
-        camera={{ position: cameraPositions[playerIndex], fov: 55 }}
+        camera={{ position: zoomedCameraPos, fov: 55 }}
         shadows
+        onPointerMissed={handleCanvasPointerMissed}
       >
         <ambientLight intensity={0.7} />
         <directionalLight position={[5, 20, 5]} intensity={0.8} castShadow />
         <Physics>
           {tablePositions.map((pos, i) => (
-            <Table key={i} position={pos} rotation={tableRotations[i]} />
+            <Table
+              key={i}
+              position={pos}
+              rotation={tableRotations[i]}
+              onCardDoubleClick={() => setZoomedCardIndex(i)}
+            />
           ))}
         </Physics>
         <CameraController
-          position={cameraPositions[playerIndex]}
-          cameraOption={cameraOption}
+          position={zoomedCameraPos}
+          cameraOption={zoomedCardIndex !== null ? undefined : cameraOption}
+          lookAt={zoomedLookAt}
         />
       </Canvas>
     </div>
