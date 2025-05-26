@@ -1,9 +1,14 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
-import { a } from "@react-spring/three";
 import * as THREE from "three";
-import { Card } from "./components/Card";
+
+import { Card } from "@/components/Card";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/game")({
+  component: Game,
+});
 
 type CameraOptions = "lookAtTable" | "lookAtCenter";
 
@@ -104,7 +109,7 @@ function CameraController({
   return null;
 }
 
-function App() {
+function Game() {
   const [playerIndex, setPlayerIndex] = useState(0);
   const [cameraOption, setCameraOption] =
     useState<CameraOptions>("lookAtTable");
@@ -202,5 +207,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
