@@ -7,7 +7,7 @@ import type { BasicObject } from "@/utils/types";
 
 interface CardProps extends BasicObject {
   front: string;
-  back: string;
+  back?: string;
   debug?: boolean;
   generalScale?: number;
   ref?: RefObject<THREE.Group<THREE.Object3DEventMap> | null>;

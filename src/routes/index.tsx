@@ -7,12 +7,13 @@ import {
   Lightformer,
   OrbitControls,
   useHelper,
-  useTexture,
 } from "@react-three/drei";
-import { Canvas, useFrame, applyProps } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import * as THREE from "three";
+import allCards from "@/consts/cards.json" with { type: "json" };
+import { getRandomInt } from "@/utils/random";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -24,6 +25,17 @@ const animationSpeed = 0.01;
 const animation = true;
 const debug = false;
 const floorDepth = -1.161;
+const spacing = 1.9;
+const y = 0.5;
+const z = -9;
+const cards = new Array(7)
+  .fill(null)
+  .map(() => allCards[getRandomInt(0, allCards.length)]);
+const positions: Array<[number, number, number]> = cards.map((_, i) => {
+  const offset = (cards.length - 1) / 2;
+  return [(i - offset) * spacing, y, z];
+});
+const card = allCards[getRandomInt(0, allCards.length)];
 
 function AnimatedCard() {
   const meshRef = useRef<THREE.Group>(null);
@@ -40,8 +52,7 @@ function AnimatedCard() {
     <Card
       ref={meshRef}
       generalScale={mainScale}
-      front="textures/annekeg1.jpg"
-      back="textures/crypt-background.jpg"
+      front={card}
       position={[0, 0.5, 0]}
     />
   );
@@ -70,65 +81,16 @@ function Light() {
 }
 
 function Floor() {
-  // const hecateTexture = useTexture("images/hecata.svg");
-
   return (
     <>
-      <mesh
-        scale={4}
-        position={[-3, floorDepth, -1]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
-      >
-        <ringGeometry args={[0.9, 1, 3, 1]} />
-        <meshStandardMaterial color="#800" roughness={0.75} />
-      </mesh>
-
-      <mesh
-        scale={4}
-        position={[3, floorDepth, -1.5]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
-      >
-        <ringGeometry args={[0.9, 1, 4, 1]} />
-        <meshStandardMaterial color="#800" roughness={0.75} />
-      </mesh>
-
       <Svg
-        scale={0.003}
-        position={[-4.5, floorDepth, -1]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        src={"images/hecata.svg"}
+        scale={0.02}
+        position={[-6, floorDepth, 5]}
+        rotation={[Math.PI / 2, 0, 0]}
+        src={"images/vtes.svg"}
         castShadow
         receiveShadow
       />
-
-      {/* <Svg
-        scale={0.005}
-        position={[-2, floorDepth, 0]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        src={"images/brujah.svg"}
-      /> */}
-
-      {/*
-      <Svg
-        scale={0.005}
-        position={[-6, floorDepth, 0]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        src={"images/ventrue.svg"}
-      />
-
-      <Svg
-        scale={0.005}
-        position={[-6, floorDepth, 0]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        src={"images/toreador.svg"}
-      />
-
-      <Svg
-        scale={0.005}
-        position={[-6, floorDepth, 0]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 4]}
-        src={"images/banuhaqim.svg"}
-      /> */}
 
       <Environment resolution={1080}>
         <Lightformer
@@ -207,6 +169,22 @@ function Floor() {
   );
 }
 
+function Cards() {
+  return (
+    <>
+      {cards.map((front, i) => (
+        <Card
+          key={i}
+          generalScale={mainScale}
+          front={front}
+          position={positions[i]}
+          rotation={[Math.PI / 2, Math.PI / 2, 0]}
+        />
+      ))}
+    </>
+  );
+}
+
 export function Home() {
   return (
     <div className="overflow-y-hidden">
@@ -229,6 +207,7 @@ export function Home() {
             opacity={0.6}
             far={20}
           />
+          <Cards />
 
           <AnimatedCard />
 
