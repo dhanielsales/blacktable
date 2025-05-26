@@ -22,8 +22,8 @@ const TABLE_RADIUS = 20;
 const CAMERA_RADIUS = 30;
 const CAMERA_HEIGHT = 12;
 const TABLE_HEIGHT = 0.2;
-const CARD_WIDTH = 0.895;
-const CARD_HEIGHT = 1.25;
+// const CARD_WIDTH = 0.895;
+// const CARD_HEIGHT = 1.25;
 const CARD_THICKNESS = 0.05;
 
 const pentagonAngles = [0, 72, 144, 216, 288];
