@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CAMERA_SETTINGS, type CameraOptions } from "@/consts";
 import { CameraController } from "@/components/CameraController";
 import { CardGrid } from "@/components/CardGrid";
+import { Card } from "@/components/Card2";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -51,6 +52,7 @@ function Table({
 }) {
   return (
     <>
+      <Card front="textures/44magnum.jpg" position={position} />
       <CardGrid
         cellHeight={GRID_CELL_HEIGHT}
         cellWidth={GRID_CELL_WIDTH}
