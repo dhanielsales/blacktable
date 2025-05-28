@@ -6,6 +6,7 @@ import { CAMERA_SETTINGS, type CameraOptions } from "@/consts";
 import { CameraController } from "@/components/CameraController";
 import { CardGrid } from "@/components/CardGrid";
 import { Card } from "@/components/Card2";
+import { degToRad } from "three/src/math/MathUtils.js";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -52,7 +53,12 @@ function Table({
 }) {
   return (
     <>
-      <Card front="textures/44magnum.jpg" position={position} />
+      <Card
+        front="textures/44magnum.jpg"
+        scale={0.49}
+        position={[position[0], position[1] + 0.1, position[2]]}
+        rotation={[rotation[0], rotation[1] - degToRad(90), rotation[2]]}
+      />
       <CardGrid
         cellHeight={GRID_CELL_HEIGHT}
         cellWidth={GRID_CELL_WIDTH}
@@ -64,7 +70,7 @@ function Table({
           -((GRID_ROWS * GRID_CELL_HEIGHT) / 2),
         ]}
         rotation={rotation}
-        position={[position[0], position[1], position[2]]}
+        position={position}
       />
       <mesh receiveShadow type="fixed" position={position} rotation={rotation}>
         <boxGeometry args={[TABLE_SIZE, 0.1, TABLE_SIZE / 2]} />

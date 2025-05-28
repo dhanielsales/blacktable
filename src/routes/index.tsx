@@ -49,12 +49,7 @@ function AnimatedCard() {
   });
 
   return (
-    <Card
-      ref={meshRef}
-      generalScale={mainScale}
-      front={card}
-      position={[0, 0.5, 0]}
-    />
+    <Card ref={meshRef} scale={mainScale} front={card} position={[0, 0.5, 0]} />
   );
 }
 
@@ -175,7 +170,7 @@ function Cards() {
       {cards.map((front, i) => (
         <Card
           key={i}
-          generalScale={mainScale}
+          scale={mainScale}
           front={front}
           position={positions[i]}
           rotation={[Math.PI / 2, Math.PI / 2, 0]}

@@ -9,13 +9,13 @@ interface CardProps extends BasicObject {
   front: string;
   back?: string;
   debug?: boolean;
-  generalScale?: number;
+  scale?: number;
   ref?: RefObject<THREE.Group<THREE.Object3DEventMap> | null>;
 }
 
 export function Card({
   debug,
-  generalScale = 1,
+  scale = 1,
   front,
   back = "textures/crypt-background.jpg",
   ref,
@@ -28,7 +28,7 @@ export function Card({
   return (
     <group
       ref={ref}
-      scale={[1.25 * generalScale, 0.0095 * generalScale, 0.895 * generalScale]}
+      scale={[1.25 * scale, 0.0095 * scale, 0.895 * scale]}
       {...rest}
     >
       <mesh geometry={(nodes.Card as any).geometry} rotation={[0, 0, 0]}>
