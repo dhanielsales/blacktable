@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CAMERA_SETTINGS, type CameraOptions } from "@/consts";
 import { CameraController } from "@/components/CameraController";
 import { CardGrid } from "@/components/CardGrid";
-import { Card } from "@/components/Card2";
+import { Card } from "@/components/Card";
 import { degToRad } from "three/src/math/MathUtils.js";
 
 export const Route = createFileRoute("/game")({

@@ -1,4 +1,4 @@
-import { Card } from "@/components/Card2";
+import { Card } from "@/components/Card";
 import {
   ContactShadows,
   Svg,
