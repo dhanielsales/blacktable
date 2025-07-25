@@ -200,7 +200,7 @@ function Game() {
 
         {/* Game Instructions */}
         <div className="absolute top-20 right-4 z-10 bg-gray-800/90 backdrop-blur-sm p-4 rounded-lg border border-gray-600 max-w-xs">
-          <h3 className="text-amber-400 font-semibold mb-2">How to Play</h3>
+          <h3 className="text-red-600 font-semibold mb-2">How to Play</h3>
           <ul className="text-sm text-gray-300 space-y-1">
             <li>• Click a card to select it</li>
             <li>• Click an empty grid cell to move</li>
