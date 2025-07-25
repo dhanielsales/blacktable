@@ -78,7 +78,7 @@ function Table({
     }
   };
 
-  // Calculate card positions based on grid
+  // Calculate card positions based on grid - should match CardGrid cell positioning exactly
   const getCardPosition = (
     row: number,
     col: number
@@ -88,50 +88,51 @@ function Table({
     const gridOriginX = -((GRID_COLS * GRID_CELL_WIDTH) / 2);
     const gridOriginZ = -((GRID_ROWS * GRID_CELL_HEIGHT) / 2);
 
-    const x =
-      position[0] + gridOriginX + col * GRID_CELL_WIDTH + GRID_CELL_WIDTH / 2;
-    const y = position[1] + 0.12;
-    const z =
-      position[2] + gridOriginZ + row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2;
+    // Calculate position exactly like CardGrid does for its cells
+    const localX = gridOriginX + col * GRID_CELL_WIDTH + GRID_CELL_WIDTH / 2;
+    const localY = 0.12; // Slightly above the grid
+    const localZ = gridOriginZ + row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2;
 
-    return [x, y, z];
+    // Return local position - let the group transform handle rotation/positioning
+    return [localX, localY, localZ];
   };
-
   return (
     <>
-      {/* Render all cards at their grid positions */}
-      {tableState.cards.map((card) => {
-        const cardPosition = getCardPosition(card.row, card.col);
-        return (
-          <Card
-            key={card.id}
-            front={card.front}
-            back={card.back}
-            scale={0.49}
-            position={cardPosition}
-            rotation={[rotation[0], rotation[1] - degToRad(90), rotation[2]]}
-            onClick={() => handleCardClick(card.id)}
-            isSelected={tableState.selectedCardId === card.id}
-          />
-        );
-      })}
+      {/* Group that contains both grid and cards with same transform */}
+      <group position={position} rotation={rotation}>
+        {/* Render all cards at their grid positions */}
+        {tableState.cards.map((card) => {
+          const cardPosition = getCardPosition(card.row, card.col);
+          return (
+            <Card
+              key={card.id}
+              front={card.front}
+              back={card.back}
+              scale={0.49}
+              position={cardPosition}
+              rotation={[0, -degToRad(90), 0]} // Only apply card-specific rotation
+              onClick={() => handleCardClick(card.id)}
+              isSelected={tableState.selectedCardId === card.id}
+            />
+          );
+        })}
 
-      <CardGrid
-        cellHeight={GRID_CELL_HEIGHT}
-        cellWidth={GRID_CELL_WIDTH}
-        cols={GRID_COLS}
-        rows={GRID_ROWS}
-        gridOrigin={[
-          -((GRID_COLS * GRID_CELL_WIDTH) / 2),
-          0.1,
-          -((GRID_ROWS * GRID_CELL_HEIGHT) / 2),
-        ]}
-        rotation={rotation}
-        position={position}
-        onCellHover={(cell) => setHoveredCell(tableIndex, cell)}
-        onCellClick={handleCellClick}
-        hoveredCell={tableState.hoveredCell}
-      />
+        <CardGrid
+          cellHeight={GRID_CELL_HEIGHT}
+          cellWidth={GRID_CELL_WIDTH}
+          cols={GRID_COLS}
+          rows={GRID_ROWS}
+          gridOrigin={[
+            -((GRID_COLS * GRID_CELL_WIDTH) / 2),
+            0.1,
+            -((GRID_ROWS * GRID_CELL_HEIGHT) / 2),
+          ]}
+          onCellHover={(cell) => setHoveredCell(tableIndex, cell)}
+          onCellClick={handleCellClick}
+        />
+      </group>
+
+      {/* Table mesh */}
       <mesh receiveShadow type="fixed" position={position} rotation={rotation}>
         <boxGeometry args={[TABLE_SIZE, 0.1, TABLE_SIZE / 2]} />
         <meshStandardMaterial color="#444" />

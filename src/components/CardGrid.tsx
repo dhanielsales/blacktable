@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useCallback } from "react";
 
 export function CardGrid({
-  position = [0, 0, 0],
-  rotation = [0, 0, 0],
   cols,
   rows,
   cellHeight,
@@ -11,7 +10,6 @@ export function CardGrid({
   color = "#6f6f6f",
   onCellHover,
   onCellClick,
-  hoveredCell,
 }: {
   color?: string;
   cols: number;
@@ -19,12 +17,28 @@ export function CardGrid({
   cellWidth: number;
   cellHeight: number;
   gridOrigin: [number, number, number];
-  position?: [number, number, number];
-  rotation?: [number, number, number];
   onCellHover?: (cell: { row: number; col: number } | null) => void;
   onCellClick?: (cell: { row: number; col: number }) => void;
-  hoveredCell?: { row: number; col: number } | null;
 }) {
+  // Local state for visual hover effects only
+  const [localHoveredCell, setLocalHoveredCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
+
+  const handleCellEnter = useCallback(
+    (row: number, col: number) => {
+      const cell = { row, col };
+      setLocalHoveredCell(cell);
+      onCellHover?.(cell);
+    },
+    [onCellHover]
+  );
+
+  const handleCellLeave = useCallback(() => {
+    setLocalHoveredCell(null);
+    onCellHover?.(null);
+  }, [onCellHover]);
   // Create arrays for indices
   const verticalIndices = Array.from({ length: cols + 1 }, (_, c) => c);
   const horizontalIndices = Array.from({ length: rows + 1 }, (_, r) => r);
@@ -36,7 +50,8 @@ export function CardGrid({
     for (let col = 0; col < cols; col++) {
       const x = gridOriginX + col * cellWidth + cellWidth / 2;
       const z = gridOriginZ + row * cellHeight + cellHeight / 2;
-      const isHovered = hoveredCell?.row === row && hoveredCell?.col === col;
+      const isHovered =
+        localHoveredCell?.row === row && localHoveredCell?.col === col;
 
       gridCells.push(
         <mesh
@@ -45,12 +60,12 @@ export function CardGrid({
           rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}
           onPointerEnter={(e) => {
             e.stopPropagation();
-            onCellHover?.({ row, col });
+            handleCellEnter(row, col);
             document.body.style.cursor = "pointer";
           }}
           onPointerLeave={(e) => {
             e.stopPropagation();
-            onCellHover?.(null);
+            handleCellLeave();
             document.body.style.cursor = "auto";
           }}
           onClick={(e) => {
@@ -60,7 +75,7 @@ export function CardGrid({
         >
           <planeGeometry args={[cellWidth * 0.92, cellHeight * 0.92]} />
           <meshBasicMaterial
-            color={isHovered ? "#ffff00" : "#00000000"}
+            color={isHovered ? "#ffff00" : undefined}
             transparent
             opacity={isHovered ? 0.3 : 0}
             side={2}
@@ -130,7 +145,7 @@ export function CardGrid({
   const lines = [...verticalLines, ...horizontalLines];
 
   return (
-    <group position={position} rotation={rotation}>
+    <group>
       {lines}
       {gridCells}
     </group>

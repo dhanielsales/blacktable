@@ -4,8 +4,9 @@ import {
   useContext,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
-  useEffect,
+  type MutableRefObject,
 } from "react";
 
 export interface CardData {
@@ -19,11 +20,15 @@ export interface CardData {
 export interface TableState {
   cards: CardData[];
   selectedCardId: string | null;
+}
+
+export interface HoverState {
   hoveredCell: { row: number; col: number } | null;
 }
 
 export interface TableContextValue {
   tableStates: Record<string, TableState>;
+  hoverStatesRef: MutableRefObject<Record<string, HoverState>>;
   selectCard: (tableId: number, cardId: string) => void;
   deselectCard: (tableId: number) => void;
   moveCard: (tableId: number, cardId: string, row: number, col: number) => void;
@@ -31,6 +36,7 @@ export interface TableContextValue {
     tableId: number,
     cell: { row: number; col: number } | null
   ) => void;
+  getHoveredCell: (tableId: number) => { row: number; col: number } | null;
   addCard: (
     tableId: number,
     card: Prettify<Omit<CardData, "id"> & { id?: string }>
@@ -65,10 +71,14 @@ export function TableProvider({
   // gridCols,
   // gridRows,
 }: TableProviderProps) {
-  // const [tableGridRefs] = useState<Record<string, TableState>>();
+  // Use ref for hover states to avoid re-renders on mouse movement
+  const hoverStatesRef = useRef<Record<string, HoverState>>({});
+
   const [tableStates, setTableStates] = useState<Record<string, TableState>>(
     () => {
       const initialStates: Record<string, TableState> = {};
+      const initialHoverStates: Record<string, HoverState> = {};
+
       for (let i = 0; i < numberOfTables; i++) {
         const tableID = getTableID(i);
         initialStates[tableID] = {
@@ -82,17 +92,19 @@ export function TableProvider({
             },
           ],
           selectedCardId: null,
+        };
+
+        initialHoverStates[tableID] = {
           hoveredCell: null,
         };
       }
 
+      // Initialize the ref
+      hoverStatesRef.current = initialHoverStates;
+
       return initialStates;
     }
   );
-
-  useEffect(() => {
-    console.log(tableStates);
-  }, [tableStates]);
 
   const selectCard = useCallback((tableIndex: number, cardId: string) => {
     const tableId = getTableID(tableIndex);
@@ -112,9 +124,13 @@ export function TableProvider({
       [tableId]: {
         ...prev[tableId],
         selectedCardId: null,
-        hoveredCell: null,
       },
     }));
+
+    // Clear hover state when deselecting
+    hoverStatesRef.current[tableId] = {
+      hoveredCell: null,
+    };
   }, []);
 
   const moveCard = useCallback(
@@ -130,9 +146,13 @@ export function TableProvider({
             card.id === cardId ? { ...card, row, col } : card
           ),
           selectedCardId: null,
-          hoveredCell: null,
         },
       }));
+
+      // Clear hover state when moving card
+      hoverStatesRef.current[tableId] = {
+        hoveredCell: null,
+      };
     },
     []
   );
@@ -140,16 +160,18 @@ export function TableProvider({
   const setHoveredCell = useCallback(
     (tableIndex: number, cell: { row: number; col: number } | null) => {
       const tableId = getTableID(tableIndex);
-      setTableStates((prev) => ({
-        ...prev,
-        [tableId]: {
-          ...prev[tableId],
-          hoveredCell: cell,
-        },
-      }));
+      // Update ref directly without triggering re-render
+      hoverStatesRef.current[tableId] = {
+        hoveredCell: cell,
+      };
     },
     []
   );
+
+  const getHoveredCell = useCallback((tableIndex: number) => {
+    const tableId = getTableID(tableIndex);
+    return hoverStatesRef.current[tableId]?.hoveredCell || null;
+  }, []);
 
   const addCard = useCallback(
     (tableIndex: number, card: Omit<CardData, "id"> & { id?: string }) => {
@@ -179,10 +201,12 @@ export function TableProvider({
 
   const contextValue: TableContextValue = {
     tableStates,
+    hoverStatesRef,
     selectCard,
     deselectCard,
     moveCard,
     setHoveredCell,
+    getHoveredCell,
     addCard,
     removeCard,
   };
