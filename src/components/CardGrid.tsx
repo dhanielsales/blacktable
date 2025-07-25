@@ -75,7 +75,7 @@ export function CardGrid({
         >
           <planeGeometry args={[cellWidth * 0.92, cellHeight * 0.92]} />
           <meshBasicMaterial
-            color={isHovered ? "#ffff00" : undefined}
+            color={isHovered ? "#000000" : undefined}
             transparent
             opacity={isHovered ? 0.3 : 0}
             side={2}

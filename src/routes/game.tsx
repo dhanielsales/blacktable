@@ -8,10 +8,14 @@ import { CardGrid } from "@/components/CardGrid";
 import { Card } from "@/components/Card";
 import { getTableID, TableProvider, useTableContext } from "@/contexts/table";
 import { degToRad } from "three/src/math/MathUtils.js";
+import { Light } from "@/components/Light";
+import { Floor } from "@/components/Floor";
 
 export const Route = createFileRoute("/game")({
   component: Game,
 });
+
+const floorDepth = -1.161;
 
 const TABLE_SIZE = 14;
 const TABLE_RADIUS = 11.8;
@@ -154,7 +158,7 @@ function Game() {
           <div className="flex items-center justify-between px-6 py-4">
             <Link
               to="/"
-              className="text-xl font-bold text-red-400 hover:text-red-300 transition-colors"
+              className="text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent from-red-600 to-red-700 hover:text-red-600 transition-colors"
             >
               ← BlackTable
             </Link>
@@ -175,7 +179,7 @@ function Game() {
         {/* Game Controls */}
         <div className="absolute top-20 left-4 z-10 space-y-2">
           <button
-            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-amber-500 transition-all duration-200 font-medium"
+            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-red-700 transition-all duration-200 font-medium"
             onClick={() =>
               setPlayerIndex((i) => (i + 1) % cameraPositions.length)
             }
@@ -183,7 +187,7 @@ function Game() {
             Switch Player ({playerIndex + 1}/5)
           </button>
           <button
-            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-amber-500 transition-all duration-200 font-medium"
+            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-red-700 transition-all duration-200 font-medium"
             onClick={() =>
               setCameraOption((prev) =>
                 prev === "lookAtCenter" ? "lookAtTable" : "lookAtCenter"
@@ -211,7 +215,10 @@ function Game() {
           }}
           shadows
         >
-          <ambientLight intensity={0.7} />
+          <Light />
+          <Floor floorDepth={floorDepth} />
+
+          {/* <ambientLight intensity={0.7} /> */}
           <directionalLight position={[5, 20, 5]} intensity={0.8} castShadow />
           {tablePositions.map((pos, i) => (
             <Table

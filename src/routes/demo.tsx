@@ -1,19 +1,13 @@
 import { Card } from "@/components/Card";
-import {
-  ContactShadows,
-  Svg,
-  Effects,
-  Environment,
-  Lightformer,
-  OrbitControls,
-  useHelper,
-} from "@react-three/drei";
+import { ContactShadows, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import * as THREE from "three";
 import allCards from "@/consts/cards.json" with { type: "json" };
 import { getRandomInt } from "@/utils/random";
+import { Light } from "@/components/Light";
+import { Floor } from "@/components/Floor";
 
 export const Route = createFileRoute("/demo")({
   component: Demo,
@@ -53,117 +47,6 @@ function AnimatedCard() {
   );
 }
 
-function Light() {
-  const light = useRef<THREE.DirectionalLightHelper>(null);
-  if (debug) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks, @typescript-eslint/no-explicit-any
-    useHelper(light as any, THREE.DirectionalLightHelper, 1, "blur");
-  }
-
-  return (
-    <>
-      <ambientLight color="#000000" intensity={0.5} />
-      <directionalLight
-        ref={light}
-        intensity={0.5}
-        castShadow
-        position={[1, 2, 3]}
-      />
-      <hemisphereLight intensity={0.5} />
-      <Effects />
-    </>
-  );
-}
-
-function Floor() {
-  return (
-    <>
-      <Svg
-        scale={0.02}
-        position={[-6, floorDepth, 5]}
-        rotation={[Math.PI / 2, 0, 0]}
-        src={"images/vtes.svg"}
-        castShadow
-        receiveShadow
-      />
-
-      <Environment resolution={1080}>
-        <Lightformer
-          color="#800"
-          intensity={2}
-          rotation-x={Math.PI / 2}
-          position={[0, 4, -9]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          color="#800"
-          intensity={2}
-          rotation-x={Math.PI / 2}
-          position={[0, 4, -6]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-x={Math.PI / 2}
-          position={[0, 4, -3]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-x={Math.PI / 2}
-          position={[0, 4, 0]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-x={Math.PI / 2}
-          position={[0, 4, 3]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-x={Math.PI / 2}
-          position={[0, 4, 6]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-x={Math.PI / 2}
-          position={[0, 4, 9]}
-          scale={[10, 1, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-y={Math.PI / 2}
-          position={[-50, 2, 0]}
-          scale={[100, 2, 1]}
-        />
-        <Lightformer
-          intensity={2}
-          color="#800"
-          rotation-y={-Math.PI / 2}
-          position={[50, 2, 0]}
-          scale={[100, 2, 1]}
-        />
-        <Lightformer
-          form="ring"
-          color="#800"
-          intensity={10}
-          scale={2}
-          position={[10, 5, 10]}
-          onUpdate={(self) => self.lookAt(0, 0, 0)}
-        />
-      </Environment>
-    </>
-  );
-}
-
 function Cards() {
   return (
     <>
@@ -192,8 +75,8 @@ export function Demo() {
           <color attach="background" args={["#15151a"]} />
           <fog attach="fog" args={["#800", 10, 70]} />
 
-          <Light />
-          <Floor />
+          <Light debug={debug} />
+          <Floor floorDepth={floorDepth} />
           <ContactShadows
             resolution={1920}
             position={[0, floorDepth + 0.1, 0]}
