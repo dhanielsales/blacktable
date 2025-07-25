@@ -11,6 +11,9 @@ interface CardProps extends BasicObject {
   debug?: boolean;
   scale?: number;
   ref?: RefObject<THREE.Group<THREE.Object3DEventMap> | null>;
+  onClick?: () => void;
+  isSelected?: boolean;
+  cardId?: string;
 }
 
 export function Card({
@@ -19,20 +22,40 @@ export function Card({
   front,
   back = "textures/crypt-background.jpg",
   ref,
+  onClick,
+  isSelected = false,
   ...rest
 }: CardProps) {
   const { nodes } = useGLTF("models/card.glb");
   const frontTexture = useTexture(front);
   const backTexture = useTexture(back);
 
+  const handleClick = (event: any) => {
+    event.stopPropagation();
+    onClick?.();
+  };
+
   return (
     <group
       ref={ref}
       scale={[1.25 * scale, 0.0095 * scale, 0.895 * scale]}
+      onClick={handleClick}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = "auto";
+      }}
       {...rest}
     >
       <mesh geometry={(nodes.Card as any).geometry} rotation={[0, 0, 0]}>
-        <meshMatcapMaterial transparent color={"#222"} />
+        <meshMatcapMaterial
+          transparent
+          color={"#222"}
+          opacity={isSelected ? 0.6 : 1.0}
+        />
         <Decal
           debug={debug}
           position={[0, 1, 0]}
@@ -45,6 +68,7 @@ export function Card({
             transparent
             polygonOffsetFactor={-1}
             polygonOffset
+            opacity={isSelected ? 0.6 : 1.0}
           />
         </Decal>
       </mesh>
@@ -53,7 +77,11 @@ export function Card({
         position={[0, -1, 0]}
         rotation={[0, Math.PI, 0]}
       >
-        <meshMatcapMaterial transparent color={"#222"} />
+        <meshMatcapMaterial
+          transparent
+          color={"#222"}
+          opacity={isSelected ? 0.6 : 1.0}
+        />
         <Decal
           position={[0, -1, 0]}
           rotation={[Math.PI / 2, 0, Math.PI / 2]}
@@ -65,6 +93,7 @@ export function Card({
             transparent
             polygonOffsetFactor={-1}
             polygonOffset
+            opacity={isSelected ? 0.6 : 1.0}
           />
         </Decal>
       </mesh>
