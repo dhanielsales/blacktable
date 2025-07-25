@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { CAMERA_SETTINGS, type CameraOptions } from "@/consts";
 import { CameraController } from "@/components/CameraController";
@@ -149,48 +149,61 @@ function Game() {
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
       <div style={{ width: "100vw", height: "100vh", background: "#222" }}>
-        <button
-          style={{
-            position: "absolute",
-            zIndex: 10,
-            top: 20,
-            left: 20,
-            padding: "10px 20px",
-            fontSize: 18,
-            borderRadius: 8,
-            border: "none",
-            background: "#f5f5dc",
-            color: "#222",
-            cursor: "pointer",
-          }}
-          onClick={() =>
-            setPlayerIndex((i) => (i + 1) % cameraPositions.length)
-          }
-        >
-          Switch Player ({playerIndex + 1}/5)
-        </button>
-        <button
-          style={{
-            position: "absolute",
-            zIndex: 10,
-            top: 20,
-            left: 230,
-            padding: "10px 20px",
-            fontSize: 18,
-            borderRadius: 8,
-            border: "none",
-            background: "#f5f5dc",
-            color: "#222",
-            cursor: "pointer",
-          }}
-          onClick={() =>
-            setCameraOption((prev) =>
-              prev === "lookAtCenter" ? "lookAtTable" : "lookAtCenter"
-            )
-          }
-        >
-          Switch Camera
-        </button>
+        {/* Navigation Header */}
+        <header className="absolute top-0 left-0 right-0 z-20 bg-black/50 backdrop-blur-sm border-b border-gray-700">
+          <div className="flex items-center justify-between px-6 py-4">
+            <Link
+              to="/"
+              className="text-xl font-bold text-red-400 hover:text-red-300 transition-colors"
+            >
+              ← BlackTable
+            </Link>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-300">
+                Player {playerIndex + 1} of 5
+              </span>
+              <Link
+                to="/rooms"
+                className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Game Rooms
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* Game Controls */}
+        <div className="absolute top-20 left-4 z-10 space-y-2">
+          <button
+            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-amber-500 transition-all duration-200 font-medium"
+            onClick={() =>
+              setPlayerIndex((i) => (i + 1) % cameraPositions.length)
+            }
+          >
+            Switch Player ({playerIndex + 1}/5)
+          </button>
+          <button
+            className="block bg-gray-800/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg border border-gray-600 hover:border-amber-500 transition-all duration-200 font-medium"
+            onClick={() =>
+              setCameraOption((prev) =>
+                prev === "lookAtCenter" ? "lookAtTable" : "lookAtCenter"
+              )
+            }
+          >
+            Switch Camera
+          </button>
+        </div>
+
+        {/* Game Instructions */}
+        <div className="absolute top-20 right-4 z-10 bg-gray-800/90 backdrop-blur-sm p-4 rounded-lg border border-gray-600 max-w-xs">
+          <h3 className="text-amber-400 font-semibold mb-2">How to Play</h3>
+          <ul className="text-sm text-gray-300 space-y-1">
+            <li>• Click a card to select it</li>
+            <li>• Click an empty grid cell to move</li>
+            <li>• Switch players to view different tables</li>
+            <li>• Use camera modes for different views</li>
+          </ul>
+        </div>
 
         <Canvas
           camera={{

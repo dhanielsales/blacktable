@@ -3,10 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blacktable Card Game</title>
+    <title>BlackTable - Virtual Card Gaming</title>
+    <meta
+      name="description"
+      content="Experience immersive card gaming in a 3D environment. Play with friends around virtual pentagon tables with realistic card physics and interactions."
+    />
+    <meta
+      name="keywords"
+      content="card game, 3D gaming, multiplayer, virtual table, online gaming"
+    />
+    <meta name="theme-color" content="#f59e0b" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="BlackTable - Virtual Card Gaming" />
+    <meta
+      property="og:description"
+      content="Experience immersive card gaming in a 3D environment with multiplayer support."
+    />
+    <meta property="og:url" content="https://blacktable.app" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="BlackTable - Virtual Card Gaming" />
+    <meta
+      property="twitter:description"
+      content="Experience immersive card gaming in a 3D environment with multiplayer support."
+    />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+
+    <!-- iOS Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="BlackTable" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
+            })
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
