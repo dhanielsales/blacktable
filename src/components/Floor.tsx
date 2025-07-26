@@ -14,36 +14,36 @@ export function Floor(props: { floorDepth: number }) {
 
       <Environment resolution={1080}>
         <Lightformer
-          color="#800"
-          intensity={2}
+          color="#400"
+          intensity={0.8}
           rotation-x={Math.PI / 2}
           position={[0, 4, -9]}
           scale={[10, 1, 1]}
         />
         <Lightformer
-          color="#800"
-          intensity={2}
+          color="#400"
+          intensity={0.8}
           rotation-x={Math.PI / 2}
           position={[0, 4, -6]}
           scale={[10, 1, 1]}
         />
         <Lightformer
-          intensity={2}
-          color="#800"
+          intensity={0.8}
+          color="#400"
           rotation-x={Math.PI / 2}
           position={[0, 4, -3]}
           scale={[10, 1, 1]}
         />
         <Lightformer
-          intensity={2}
-          color="#800"
+          intensity={0.8}
+          color="#400"
           rotation-x={Math.PI / 2}
           position={[0, 4, 0]}
           scale={[10, 1, 1]}
         />
         <Lightformer
-          intensity={2}
-          color="#800"
+          intensity={0.8}
+          color="#400"
           rotation-x={Math.PI / 2}
           position={[0, 4, 3]}
           scale={[10, 1, 1]}

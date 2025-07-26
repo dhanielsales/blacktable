@@ -119,11 +119,7 @@ export function Card({
       )}
 
       <mesh geometry={(nodes.Card as any).geometry} rotation={[0, 0, 0]}>
-        <meshMatcapMaterial
-          transparent
-          color={isSelected ? "#ff4444" : "#222"}
-          opacity={isSelected ? 0.9 : 1.0}
-        />
+        <meshMatcapMaterial transparent opacity={isSelected ? 0.9 : 1.0} />
         <Decal
           debug={debug}
           position={[0, 1, 0]}
@@ -145,11 +141,7 @@ export function Card({
         position={[0, -1, 0]}
         rotation={[0, Math.PI, 0]}
       >
-        <meshMatcapMaterial
-          transparent
-          color={isSelected ? "#ff4444" : "#222"}
-          opacity={isSelected ? 0.9 : 1.0}
-        />
+        <meshMatcapMaterial transparent opacity={isSelected ? 0.9 : 1.0} />
         <Decal
           position={[0, -1, 0]}
           rotation={[Math.PI / 2, 0, Math.PI / 2]}
