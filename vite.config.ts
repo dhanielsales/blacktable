@@ -14,6 +14,24 @@ export default defineConfig({
     TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
     react(),
   ],
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["@tanstack/react-router"],
+          three: [
+            "three",
+            "@react-three/fiber",
+            "@react-three/drei",
+            "@react-three/rapier",
+          ],
+          spring: ["@react-spring/three"],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
