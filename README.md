@@ -109,3 +109,5 @@ npm run lint         # Run ESLint
 ---
 
 **BlackTable** - Where card games come alive in 3D! 🎮✨
+
+- Ok now I want to improve the card state. I want to make the card I want to be able to stay in these states even simultaneously: face down, turn (rotated 90 degree to the right)

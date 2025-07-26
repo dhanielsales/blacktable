@@ -7,6 +7,7 @@ import * as THREE from "three";
 import type { BasicObject } from "@/utils/types";
 import { SelectionEffects } from "./SelectionEffects";
 import type { SelectionThemeName } from "@/consts/selectionThemes";
+import type { ThreeEvent } from "@react-three/fiber";
 
 interface CardProps extends BasicObject {
   front: string;
@@ -14,7 +15,8 @@ interface CardProps extends BasicObject {
   debug?: boolean;
   scale?: number;
   ref?: RefObject<THREE.Group<THREE.Object3DEventMap> | null>;
-  onClick?: () => void;
+  onClick: (event: ThreeEvent<MouseEvent>) => void;
+  onRightClick?: (event: THREE.Event) => void;
   isSelected?: boolean;
   cardId?: string;
   selectedTheme?: SelectionThemeName;
@@ -27,6 +29,7 @@ export function Card({
   back = "textures/crypt-background.jpg",
   ref,
   onClick,
+  // onRightClick,
   isSelected = false,
   selectedTheme = "blood",
   ...rest
@@ -42,11 +45,6 @@ export function Card({
     config: { tension: 300, friction: 30 },
   });
 
-  const handleClick = (event: any) => {
-    event.stopPropagation();
-    onClick?.();
-  };
-
   return (
     <animated.group
       ref={ref}
@@ -56,7 +54,11 @@ export function Card({
         0.895 * scale * s,
       ])}
       position={position as any}
-      onClick={handleClick}
+      onClick={(event) => {
+        event.stopPropagation();
+        event.nativeEvent.preventDefault();
+        onClick(event);
+      }}
       onPointerOver={(e) => {
         e.stopPropagation();
         document.body.style.cursor = "pointer";
@@ -71,7 +73,11 @@ export function Card({
       <SelectionEffects isSelected={isSelected} theme={selectedTheme} />
 
       <mesh geometry={(nodes.Card as any).geometry} rotation={[0, 0, 0]}>
-        <meshMatcapMaterial transparent opacity={isSelected ? 0.9 : 1.0} />
+        <meshMatcapMaterial
+          transparent
+          opacity={isSelected ? 0.9 : 1.0}
+          color={"#000"}
+        />
         <Decal
           debug={debug}
           position={[0, 1, 0]}

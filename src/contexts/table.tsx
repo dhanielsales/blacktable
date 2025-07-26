@@ -156,8 +156,6 @@ export function TableProvider({
 
   const moveCard = useCallback(
     (tableIndex: number, cardId: string, row: number, col: number) => {
-      console.log("moveCard", tableIndex, cardId, row, col);
-
       const tableId = getTableID(tableIndex);
       setTableStates((prev) => ({
         ...prev,

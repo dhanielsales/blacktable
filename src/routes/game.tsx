@@ -161,7 +161,10 @@ function Game() {
 
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
-      <div style={{ width: "100vw", height: "100vh", background: "#222" }}>
+      <div
+        style={{ width: "100vw", height: "100vh", background: "#222" }}
+        onContextMenu={(e) => e.preventDefault()} // Disable default browser context menu
+      >
         {/* Navigation Header */}
         <header className="absolute top-0 left-0 right-0 z-20 bg-black/50 backdrop-blur-sm border-b border-gray-700">
           <div className="flex items-center justify-between px-6 py-4">
