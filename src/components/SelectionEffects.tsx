@@ -2,6 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, useMemo } from "react";
 import * as THREE from "three";
 import {
+  defaultSelectionTheme,
   SELECTION_EFFECT_THEMES,
   type SelectionThemeName,
 } from "@/consts/selectionThemes";
@@ -17,7 +18,7 @@ interface SelectionEffectsProps {
 
 export function SelectionEffects({
   isSelected,
-  theme = "default",
+  theme = defaultSelectionTheme,
   particleColor,
   glowColor,
   baseGlowColor,
