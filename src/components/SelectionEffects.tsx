@@ -71,6 +71,7 @@ export function SelectionEffects({
   const finalBaseGlowColor = baseGlowColor || selectedTheme.baseGlowColor;
   const glowRingRef = useRef<THREE.Mesh>(null);
   const particlesRef = useRef<THREE.Points>(null);
+  const baseGlowRef = useRef<THREE.Mesh>(null);
 
   // Animated glow ring
   useFrame((state) => {
@@ -82,14 +83,25 @@ export function SelectionEffects({
     if (glowRingRef.current) {
       glowRingRef.current.rotation.z = time * 0.5;
       const material = glowRingRef.current.material as THREE.MeshBasicMaterial;
-      material.opacity = (Math.sin(time * 3) * 0.3 + 0.7) * 0.6;
+      material.opacity = (Math.sin(time * 3) * 0.3 + 0.7) * 0.8; // Increased opacity
+      // Update color dynamically to ensure it's applied
+      material.color.set(finalGlowColor);
     }
 
     // Particle effect
     if (particlesRef.current) {
       particlesRef.current.rotation.y = time * 0.3;
       const material = particlesRef.current.material as THREE.PointsMaterial;
-      material.opacity = Math.sin(time * 2) * 0.3 + 0.5;
+      material.opacity = Math.sin(time * 2) * 0.3 + 0.7; // Increased opacity
+      // Update color dynamically to ensure it's applied
+      material.color.set(finalParticleColor);
+    }
+
+    // Base glow pulsing effect
+    if (baseGlowRef.current) {
+      const material = baseGlowRef.current.material as THREE.MeshBasicMaterial;
+      material.opacity = Math.sin(time * 1.5) * 0.2 + 0.4; // Pulsing opacity
+      material.color.set(finalBaseGlowColor);
     }
   });
 
@@ -107,48 +119,57 @@ export function SelectionEffects({
   }
 
   return (
-    <group>
-      {/* Glowing ring */}
+    <group renderOrder={10}>
+      {" "}
+      {/* Ensure effects render on top */}
+      {/* Pulsing base glow - render first */}
+      <mesh
+        ref={baseGlowRef}
+        rotation={[Math.PI / 2, 0, 0]}
+        position={[0, 0.03, 0]}
+        renderOrder={1}
+      >
+        <circleGeometry args={[1.4, 32]} />
+        <meshBasicMaterial
+          color={finalBaseGlowColor}
+          transparent
+          opacity={0.3}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Glowing ring - render second */}
       <mesh
         ref={glowRingRef}
         rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0.05, 0]}
+        position={[0, 0.08, 0]}
+        renderOrder={2}
       >
-        <ringGeometry args={[0.6, 0.8, 32]} />
+        <ringGeometry args={[0.7, 0.9, 32]} />
         <meshBasicMaterial
           color={finalGlowColor}
           transparent
-          opacity={0.6}
+          opacity={0.8}
           side={THREE.DoubleSide}
           blending={THREE.AdditiveBlending}
+          depthWrite={false}
         />
       </mesh>
-
-      {/* Particle effect */}
-      <points ref={particlesRef} position={[0, 0.1, 0]}>
+      {/* Particle effect - render last */}
+      <points ref={particlesRef} position={[0, 0.12, 0]} renderOrder={3}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
         <pointsMaterial
           color={finalParticleColor}
-          size={0.03}
+          size={0.04}
           transparent
-          opacity={0.8}
+          opacity={0.9}
           blending={THREE.AdditiveBlending}
           sizeAttenuation={true}
+          depthWrite={false}
         />
       </points>
-
-      {/* Pulsing base glow */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <circleGeometry args={[1.2, 32]} />
-        <meshBasicMaterial
-          color={finalBaseGlowColor}
-          transparent
-          opacity={0.2}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
     </group>
   );
 }

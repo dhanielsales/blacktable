@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 export function Light({
   debug = false,
-  color = "#a83240",
+  color = "#fff000",
   intensity = 0.5,
 }: {
   debug?: boolean;

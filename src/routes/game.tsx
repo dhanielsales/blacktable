@@ -10,6 +10,10 @@ import { getTableID, TableProvider, useTableContext } from "@/contexts/table";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { Light } from "@/components/Light";
 import { Floor } from "@/components/Floor";
+import {
+  SELECTION_THEMES,
+  type SelectionThemeName,
+} from "@/components/SelectionEffects";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -20,8 +24,6 @@ const getCardPosition = (
   row: number,
   col: number
 ): [number, number, number] => {
-  console.log("getCardPosition", row, col);
-
   const gridOriginX = -((GRID_COLS * GRID_CELL_WIDTH) / 2);
   const gridOriginZ = -((GRID_ROWS * GRID_CELL_HEIGHT) / 2);
 
@@ -71,10 +73,12 @@ function Table({
   tableIndex,
   position,
   rotation,
+  selectedTheme,
 }: {
   tableIndex: number;
   position: [number, number, number];
   rotation: [number, number, number];
+  selectedTheme: SelectionThemeName;
 }) {
   const { tableStates, selectCard, deselectCard, moveCard, setHoveredCell } =
     useTableContext();
@@ -117,6 +121,7 @@ function Table({
               rotation={[0, -degToRad(90), 0]} // Only apply card-specific rotation
               onClick={() => handleCardClick(card.id)}
               isSelected={tableState.selectedCardId === card.id}
+              selectedTheme={selectedTheme}
             />
           );
         })}
@@ -149,6 +154,8 @@ function Game() {
   const [playerIndex, setPlayerIndex] = useState(0);
   const [cameraOption, setCameraOption] =
     useState<CameraOptions>("lookAtCenter");
+  const [selectedTheme, setSelectedTheme] =
+    useState<SelectionThemeName>("electric");
 
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
@@ -163,6 +170,53 @@ function Game() {
               ← BlackTable
             </Link>
             <div className="flex items-center space-x-4">
+              {/* Theme Selector */}
+              <div className="flex items-center space-x-2 bg-gray-900/70 px-3 py-2 rounded-lg border border-gray-600">
+                <label
+                  htmlFor="theme-select"
+                  className="text-sm text-gray-300 font-medium"
+                >
+                  Effect:
+                </label>
+                <div className="flex items-center space-x-2">
+                  {/* Color preview */}
+                  <div
+                    className="w-3 h-3 rounded-full border border-gray-500"
+                    style={{
+                      backgroundColor:
+                        SELECTION_THEMES[selectedTheme].particleColor,
+                    }}
+                  />
+                  <select
+                    id="theme-select"
+                    value={selectedTheme}
+                    onChange={(e) =>
+                      setSelectedTheme(e.target.value as SelectionThemeName)
+                    }
+                    className="bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 hover:border-red-700 focus:border-red-500 focus:outline-none transition-colors cursor-pointer"
+                  >
+                    {Object.keys(SELECTION_THEMES).map((theme) => (
+                      <option key={theme} value={theme} className="bg-gray-800">
+                        {theme.charAt(0).toUpperCase() + theme.slice(1)}{" "}
+                        {theme === "blood"
+                          ? "🩸"
+                          : theme === "fire"
+                            ? "🔥"
+                            : theme === "ice"
+                              ? "❄️"
+                              : theme === "electric"
+                                ? "⚡"
+                                : theme === "nature"
+                                  ? "🌿"
+                                  : theme === "gold"
+                                    ? "✨"
+                                    : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <span className="text-sm text-gray-300">
                 Player {playerIndex + 1} of 5
               </span>
@@ -206,6 +260,7 @@ function Game() {
             <li>• Click an empty grid cell to move</li>
             <li>• Switch players to view different tables</li>
             <li>• Use camera modes for different views</li>
+            <li>• Change effect themes in the header</li>
           </ul>
         </div>
 
@@ -226,6 +281,7 @@ function Game() {
               tableIndex={i}
               position={pos}
               rotation={tableRotations[i]}
+              selectedTheme={selectedTheme}
             />
           ))}
           <CameraController

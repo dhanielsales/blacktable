@@ -7,7 +7,7 @@ import type { RefObject } from "react";
 import * as THREE from "three";
 
 import type { BasicObject } from "@/utils/types";
-import { SelectionEffects } from "./SelectionEffects";
+import { SelectionEffects, type SelectionThemeName } from "./SelectionEffects";
 
 interface CardProps extends BasicObject {
   front: string;
@@ -18,6 +18,7 @@ interface CardProps extends BasicObject {
   onClick?: () => void;
   isSelected?: boolean;
   cardId?: string;
+  selectedTheme?: SelectionThemeName;
 }
 
 export function Card({
@@ -28,6 +29,7 @@ export function Card({
   ref,
   onClick,
   isSelected = false,
+  selectedTheme = "blood",
   ...rest
 }: CardProps) {
   const { nodes } = useGLTF("models/card.glb");
@@ -95,10 +97,7 @@ export function Card({
       {...rest}
     >
       {/* Selection Effects */}
-      <SelectionEffects
-        isSelected={isSelected}
-        theme="blood" // Use the new blood theme
-      />
+      <SelectionEffects isSelected={isSelected} theme={selectedTheme} />
 
       {/* Glow effect behind the card */}
       {isSelected && (
