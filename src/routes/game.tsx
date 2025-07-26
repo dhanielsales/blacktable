@@ -15,8 +15,26 @@ export const Route = createFileRoute("/game")({
   component: Game,
 });
 
-const floorDepth = -1.161;
+// Calculate card positions based on grid - should match CardGrid cell positioning exactly
+const getCardPosition = (
+  row: number,
+  col: number
+): [number, number, number] => {
+  console.log("getCardPosition", row, col);
 
+  const gridOriginX = -((GRID_COLS * GRID_CELL_WIDTH) / 2);
+  const gridOriginZ = -((GRID_ROWS * GRID_CELL_HEIGHT) / 2);
+
+  // Calculate position exactly like CardGrid does for its cells
+  const localX = gridOriginX + col * GRID_CELL_WIDTH + GRID_CELL_WIDTH / 2;
+  const localY = 0.12; // Slightly above the grid
+  const localZ = gridOriginZ + row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2;
+
+  // Return local position - let the group transform handle rotation/positioning
+  return [localX, localY, localZ];
+};
+
+const floorDepth = -1.161;
 const TABLE_SIZE = 14;
 const TABLE_RADIUS = 11.8;
 const CAMERA_RADIUS = 15;
@@ -82,24 +100,6 @@ function Table({
     }
   };
 
-  // Calculate card positions based on grid - should match CardGrid cell positioning exactly
-  const getCardPosition = (
-    row: number,
-    col: number
-  ): [number, number, number] => {
-    console.log("getCardPosition", row, col);
-
-    const gridOriginX = -((GRID_COLS * GRID_CELL_WIDTH) / 2);
-    const gridOriginZ = -((GRID_ROWS * GRID_CELL_HEIGHT) / 2);
-
-    // Calculate position exactly like CardGrid does for its cells
-    const localX = gridOriginX + col * GRID_CELL_WIDTH + GRID_CELL_WIDTH / 2;
-    const localY = 0.12; // Slightly above the grid
-    const localZ = gridOriginZ + row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2;
-
-    // Return local position - let the group transform handle rotation/positioning
-    return [localX, localY, localZ];
-  };
   return (
     <>
       {/* Group that contains both grid and cards with same transform */}

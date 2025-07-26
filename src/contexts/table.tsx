@@ -84,11 +84,32 @@ export function TableProvider({
         initialStates[tableID] = {
           cards: [
             {
-              id: tableID,
+              id: `${tableID}-card-1`,
               front: "textures/44magnum.jpg",
               back: "textures/crypt-background.jpg",
               row: 0,
               col: 0,
+            },
+            {
+              id: `${tableID}-card-2`,
+              front: "textures/abombwe.jpg",
+              back: "textures/crypt-background.jpg",
+              row: 0,
+              col: 1,
+            },
+            {
+              id: `${tableID}-card-3`,
+              front: "textures/abjure.jpg",
+              back: "textures/crypt-background.jpg",
+              row: 1,
+              col: 0,
+            },
+            {
+              id: `${tableID}-card-4`,
+              front: "textures/abdalrashidg2.jpg",
+              back: "textures/crypt-background.jpg",
+              row: 1,
+              col: 1,
             },
           ],
           selectedCardId: null,
