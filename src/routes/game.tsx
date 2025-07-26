@@ -6,7 +6,9 @@ import { CAMERA_SETTINGS, type CameraOptions } from "@/consts";
 import { CameraController } from "@/components/CameraController";
 import { CardGrid } from "@/components/CardGrid";
 import { Card } from "@/components/Card";
+import { ContextMenu, type ContextMenuItem } from "@/components/ContextMenu";
 import { getTableID, TableProvider, useTableContext } from "@/contexts/table";
+import { useContextMenu } from "@/hooks/useContextMenu";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { Light } from "@/components/Light";
 import { Floor } from "@/components/Floor";
@@ -15,6 +17,7 @@ import {
   SELECTION_EFFECT_THEMES,
   type SelectionThemeName,
 } from "@/consts/selectionThemes";
+import { Copy, RotateCcw, Trash2, Eye } from "lucide-react";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -75,11 +78,13 @@ function Table({
   position,
   rotation,
   selectedTheme,
+  onCardRightClick,
 }: {
   tableIndex: number;
   position: [number, number, number];
   rotation: [number, number, number];
   selectedTheme: SelectionThemeName;
+  onCardRightClick: (cardId: string, x: number, y: number) => void;
 }) {
   const { tableStates, selectCard, deselectCard, moveCard, setHoveredCell } =
     useTableContext();
@@ -121,6 +126,11 @@ function Table({
               position={cardPosition}
               rotation={[0, -degToRad(90), 0]} // Only apply card-specific rotation
               onClick={() => handleCardClick(card.id)}
+              onRightClick={(event) => {
+                const clientX = event.nativeEvent.clientX;
+                const clientY = event.nativeEvent.clientY;
+                onCardRightClick(card.id, clientX, clientY);
+              }}
               isSelected={tableState.selectedCardId === card.id}
               selectedTheme={selectedTheme}
             />
@@ -158,6 +168,64 @@ function Game() {
   const [selectedTheme, setSelectedTheme] = useState<SelectionThemeName>(
     defaultSelectionTheme
   );
+
+  const { contextMenu, openContextMenu, closeContextMenu } = useContextMenu();
+
+  const handleCardRightClick = (cardId: string, x: number, y: number) => {
+    openContextMenu(x, y, cardId);
+  };
+
+  const getContextMenuItems = (cardId: string): ContextMenuItem[] => [
+    {
+      id: "copy",
+      label: "Copy Card",
+      icon: <Copy size={16} />,
+      onClick: () => {
+        console.log("Copy card:", cardId);
+        // Add copy functionality here
+      },
+    },
+    {
+      id: "rotate",
+      label: "Rotate Card",
+      icon: <RotateCcw size={16} />,
+      onClick: () => {
+        console.log("Rotate card:", cardId);
+        // Add rotate functionality here
+      },
+    },
+    {
+      id: "separator1",
+      label: "───────────",
+      onClick: () => {},
+      disabled: true,
+    },
+    {
+      id: "flip",
+      label: "Flip Card",
+      icon: <Eye size={16} />,
+      onClick: () => {
+        console.log("Flip card:", cardId);
+        // Add flip functionality here
+      },
+    },
+    {
+      id: "separator2",
+      label: "───────────",
+      onClick: () => {},
+      disabled: true,
+    },
+    {
+      id: "remove",
+      label: "Remove Card",
+      icon: <Trash2 size={16} />,
+      variant: "danger" as const,
+      onClick: () => {
+        console.log("Remove card:", cardId);
+        // Add remove functionality here
+      },
+    },
+  ];
 
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
@@ -285,6 +353,7 @@ function Game() {
               position={pos}
               rotation={tableRotations[i]}
               selectedTheme={selectedTheme}
+              onCardRightClick={handleCardRightClick}
             />
           ))}
           <CameraController
@@ -293,6 +362,16 @@ function Game() {
             fov={CAMERA_SETTINGS[cameraOption].fov}
           />
         </Canvas>
+
+        {/* Context Menu */}
+        <ContextMenu
+          isOpen={contextMenu.isOpen}
+          position={contextMenu.position}
+          items={
+            contextMenu.cardId ? getContextMenuItems(contextMenu.cardId) : []
+          }
+          onClose={closeContextMenu}
+        />
       </div>
     </TableProvider>
   );

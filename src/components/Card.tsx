@@ -16,7 +16,7 @@ interface CardProps extends BasicObject {
   scale?: number;
   ref?: RefObject<THREE.Group<THREE.Object3DEventMap> | null>;
   onClick: (event: ThreeEvent<MouseEvent>) => void;
-  onRightClick?: (event: THREE.Event) => void;
+  onRightClick?: (event: ThreeEvent<MouseEvent>) => void;
   isSelected?: boolean;
   cardId?: string;
   selectedTheme?: SelectionThemeName;
@@ -29,7 +29,7 @@ export function Card({
   back = "textures/crypt-background.jpg",
   ref,
   onClick,
-  // onRightClick,
+  onRightClick,
   isSelected = false,
   selectedTheme = "blood",
   ...rest
@@ -58,6 +58,13 @@ export function Card({
         event.stopPropagation();
         event.nativeEvent.preventDefault();
         onClick(event);
+      }}
+      onContextMenu={(event) => {
+        if (onRightClick) {
+          event.stopPropagation();
+          event.nativeEvent.preventDefault();
+          onRightClick(event);
+        }
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
