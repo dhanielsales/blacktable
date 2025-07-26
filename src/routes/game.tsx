@@ -273,8 +273,6 @@ function Game() {
           <Light />
           <Floor floorDepth={floorDepth} />
 
-          {/* <ambientLight intensity={0.7} /> */}
-          <directionalLight position={[5, 20, 5]} intensity={0.8} castShadow />
           {tablePositions.map((pos, i) => (
             <Table
               key={i}

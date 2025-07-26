@@ -73,6 +73,13 @@ export function SelectionEffects({
   const particlesRef = useRef<THREE.Points>(null);
   const baseGlowRef = useRef<THREE.Mesh>(null);
 
+  console.log({
+    finalParticleColor,
+    finalGlowColor,
+    finalBaseGlowColor,
+    theme,
+  });
+
   // Animated glow ring
   useFrame((state) => {
     if (!isSelected) return;
@@ -120,9 +127,6 @@ export function SelectionEffects({
 
   return (
     <group renderOrder={10}>
-      {" "}
-      {/* Ensure effects render on top */}
-      {/* Pulsing base glow - render first */}
       <mesh
         ref={baseGlowRef}
         rotation={[Math.PI / 2, 0, 0]}
@@ -138,7 +142,7 @@ export function SelectionEffects({
           depthWrite={false}
         />
       </mesh>
-      {/* Glowing ring - render second */}
+
       <mesh
         ref={glowRingRef}
         rotation={[Math.PI / 2, 0, 0]}
@@ -155,8 +159,8 @@ export function SelectionEffects({
           depthWrite={false}
         />
       </mesh>
-      {/* Particle effect - render last */}
-      <points ref={particlesRef} position={[0, 0.12, 0]} renderOrder={3}>
+
+      <points ref={particlesRef} position={[0, 1.8, 0]} renderOrder={3}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
