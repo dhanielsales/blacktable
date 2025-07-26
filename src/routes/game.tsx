@@ -17,7 +17,15 @@ import {
   SELECTION_EFFECT_THEMES,
   type SelectionThemeName,
 } from "@/consts/selectionThemes";
-import { Copy, RotateCcw, Trash2, Eye } from "lucide-react";
+import {
+  Copy,
+  RotateCcw,
+  Trash2,
+  Eye,
+  Settings,
+  Move,
+  Palette,
+} from "lucide-react";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -180,30 +188,60 @@ function Game() {
       id: "copy",
       label: "Copy Card",
       icon: <Copy size={16} />,
+      shortcut: "Ctrl+C",
       onClick: () => {
         console.log("Copy card:", cardId);
         // Add copy functionality here
       },
     },
     {
+      id: "move-submenu",
+      type: "submenu",
+      label: "Move Card",
+      icon: <Move size={16} />,
+      submenu: [
+        {
+          id: "move-to-hand",
+          label: "To Hand",
+          onClick: () => console.log("Move to hand:", cardId),
+        },
+        {
+          id: "move-to-deck",
+          label: "To Deck",
+          onClick: () => console.log("Move to deck:", cardId),
+        },
+        {
+          id: "move-separator",
+          type: "separator",
+          label: "",
+        },
+        {
+          id: "move-to-graveyard",
+          label: "To Graveyard",
+          onClick: () => console.log("Move to graveyard:", cardId),
+        },
+      ],
+    },
+    {
+      id: "separator1",
+      type: "separator",
+      label: "",
+    },
+    {
       id: "rotate",
       label: "Rotate Card",
       icon: <RotateCcw size={16} />,
+      shortcut: "R",
       onClick: () => {
         console.log("Rotate card:", cardId);
         // Add rotate functionality here
       },
     },
     {
-      id: "separator1",
-      label: "───────────",
-      onClick: () => {},
-      disabled: true,
-    },
-    {
       id: "flip",
       label: "Flip Card",
       icon: <Eye size={16} />,
+      shortcut: "F",
       onClick: () => {
         console.log("Flip card:", cardId);
         // Add flip functionality here
@@ -211,15 +249,71 @@ function Game() {
     },
     {
       id: "separator2",
-      label: "───────────",
-      onClick: () => {},
-      disabled: true,
+      type: "separator",
+      label: "",
+    },
+    {
+      id: "appearance-submenu",
+      type: "submenu",
+      label: "Appearance",
+      icon: <Palette size={16} />,
+      submenu: [
+        {
+          id: "highlight-red",
+          label: "Highlight Red",
+          onClick: () => console.log("Highlight red:", cardId),
+        },
+        {
+          id: "highlight-blue",
+          label: "Highlight Blue",
+          onClick: () => console.log("Highlight blue:", cardId),
+        },
+        {
+          id: "highlight-green",
+          label: "Highlight Green",
+          onClick: () => console.log("Highlight green:", cardId),
+        },
+        {
+          id: "highlight-separator",
+          type: "separator",
+          label: "",
+        },
+        {
+          id: "clear-highlight",
+          label: "Clear Highlight",
+          onClick: () => console.log("Clear highlight:", cardId),
+        },
+      ],
+    },
+    {
+      id: "settings-submenu",
+      type: "submenu",
+      label: "Settings",
+      icon: <Settings size={16} />,
+      submenu: [
+        {
+          id: "lock-card",
+          label: "Lock Position",
+          onClick: () => console.log("Lock card:", cardId),
+        },
+        {
+          id: "make-invisible",
+          label: "Make Invisible",
+          onClick: () => console.log("Make invisible:", cardId),
+        },
+      ],
+    },
+    {
+      id: "separator3",
+      type: "separator",
+      label: "",
     },
     {
       id: "remove",
       label: "Remove Card",
       icon: <Trash2 size={16} />,
       variant: "danger" as const,
+      shortcut: "Del",
       onClick: () => {
         console.log("Remove card:", cardId);
         // Add remove functionality here
