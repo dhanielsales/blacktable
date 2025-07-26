@@ -155,7 +155,7 @@ function Game() {
   const [cameraOption, setCameraOption] =
     useState<CameraOptions>("lookAtCenter");
   const [selectedTheme, setSelectedTheme] =
-    useState<SelectionThemeName>("electric");
+    useState<SelectionThemeName>("blood");
 
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
