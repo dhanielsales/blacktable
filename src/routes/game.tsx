@@ -11,9 +11,10 @@ import { degToRad } from "three/src/math/MathUtils.js";
 import { Light } from "@/components/Light";
 import { Floor } from "@/components/Floor";
 import {
-  SELECTION_THEMES,
+  defaultSelectionTheme,
+  SELECTION_EFFECT_THEMES,
   type SelectionThemeName,
-} from "@/components/SelectionEffects";
+} from "@/consts/selectionThemes";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -154,8 +155,9 @@ function Game() {
   const [playerIndex, setPlayerIndex] = useState(0);
   const [cameraOption, setCameraOption] =
     useState<CameraOptions>("lookAtCenter");
-  const [selectedTheme, setSelectedTheme] =
-    useState<SelectionThemeName>("blood");
+  const [selectedTheme, setSelectedTheme] = useState<SelectionThemeName>(
+    defaultSelectionTheme
+  );
 
   return (
     <TableProvider numberOfTables={5} gridCols={GRID_COLS} gridRows={GRID_ROWS}>
@@ -184,7 +186,7 @@ function Game() {
                     className="w-3 h-3 rounded-full border border-gray-500"
                     style={{
                       backgroundColor:
-                        SELECTION_THEMES[selectedTheme].particleColor,
+                        SELECTION_EFFECT_THEMES[selectedTheme].particleColor,
                     }}
                   />
                   <select
@@ -195,7 +197,7 @@ function Game() {
                     }
                     className="bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 hover:border-red-700 focus:border-red-500 focus:outline-none transition-colors cursor-pointer"
                   >
-                    {Object.keys(SELECTION_THEMES).map((theme) => (
+                    {Object.keys(SELECTION_EFFECT_THEMES).map((theme) => (
                       <option key={theme} value={theme} className="bg-gray-800">
                         {theme.charAt(0).toUpperCase() + theme.slice(1)}{" "}
                         {theme === "blood"

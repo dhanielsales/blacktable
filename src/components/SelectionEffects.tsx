@@ -1,52 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import * as THREE from "three";
-
-export interface SelectionTheme {
-  particleColor: string;
-  glowColor: string;
-  baseGlowColor: string;
-}
-
-export const SELECTION_THEMES = {
-  fire: {
-    particleColor: "#ff4400",
-    glowColor: "#ff0000",
-    baseGlowColor: "#ff8800",
-  },
-  ice: {
-    particleColor: "#88ddff",
-    glowColor: "#0088ff",
-    baseGlowColor: "#aaccff",
-  },
-  electric: {
-    particleColor: "#ffff00",
-    glowColor: "#8800ff",
-    baseGlowColor: "#ff00ff",
-  },
-  nature: {
-    particleColor: "#44ff44",
-    glowColor: "#88ff00",
-    baseGlowColor: "#00ff88",
-  },
-  gold: {
-    particleColor: "#ffdd00",
-    glowColor: "#ff8800",
-    baseGlowColor: "#ffaa44",
-  },
-  blood: {
-    particleColor: "#cc0000",
-    glowColor: "#990000",
-    baseGlowColor: "#660000",
-  },
-  default: {
-    particleColor: "#00ffff",
-    glowColor: "#ff6b6b",
-    baseGlowColor: "#ff3333",
-  },
-} as const;
-
-export type SelectionThemeName = keyof typeof SELECTION_THEMES;
+import {
+  SELECTION_EFFECT_THEMES,
+  type SelectionThemeName,
+} from "@/consts/selectionThemes";
 
 interface SelectionEffectsProps {
   isSelected: boolean;
@@ -54,6 +12,7 @@ interface SelectionEffectsProps {
   particleColor?: string;
   glowColor?: string;
   baseGlowColor?: string;
+  cardGlowColor?: string;
 }
 
 export function SelectionEffects({
@@ -62,25 +21,38 @@ export function SelectionEffects({
   particleColor,
   glowColor,
   baseGlowColor,
+  cardGlowColor,
 }: SelectionEffectsProps) {
-  const selectedTheme = SELECTION_THEMES[theme];
+  const selectedTheme = SELECTION_EFFECT_THEMES[theme];
 
   // Use custom colors if provided, otherwise use theme colors
   const finalParticleColor = particleColor || selectedTheme.particleColor;
   const finalGlowColor = glowColor || selectedTheme.glowColor;
   const finalBaseGlowColor = baseGlowColor || selectedTheme.baseGlowColor;
+  const finalCardGlowColor = cardGlowColor || selectedTheme.cardGlowColor;
+
   const glowRingRef = useRef<THREE.Mesh>(null);
   const particlesRef = useRef<THREE.Points>(null);
   const baseGlowRef = useRef<THREE.Mesh>(null);
+  const cardGlowRef = useRef<THREE.Mesh>(null);
+  const outlineRef = useRef<THREE.Mesh>(null);
 
-  console.log({
-    finalParticleColor,
-    finalGlowColor,
-    finalBaseGlowColor,
-    theme,
-  });
+  // Glow geometry and material for card background glow (from Card component)
+  const cardGlowGeometry = useMemo(() => {
+    return new THREE.PlaneGeometry(2.2, 2.2); // Slightly larger than card
+  }, []);
 
-  // Animated glow ring
+  const cardGlowMaterial = useMemo(() => {
+    return new THREE.MeshBasicMaterial({
+      color: new THREE.Color(finalCardGlowColor),
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [finalCardGlowColor]);
+
+  // Animated glow effects
   useFrame((state) => {
     if (!isSelected) return;
 
@@ -90,8 +62,7 @@ export function SelectionEffects({
     if (glowRingRef.current) {
       glowRingRef.current.rotation.z = time * 0.5;
       const material = glowRingRef.current.material as THREE.MeshBasicMaterial;
-      material.opacity = (Math.sin(time * 3) * 0.3 + 0.7) * 0.8; // Increased opacity
-      // Update color dynamically to ensure it's applied
+      material.opacity = (Math.sin(time * 3) * 0.3 + 0.7) * 0.8;
       material.color.set(finalGlowColor);
     }
 
@@ -99,16 +70,30 @@ export function SelectionEffects({
     if (particlesRef.current) {
       particlesRef.current.rotation.y = time * 0.3;
       const material = particlesRef.current.material as THREE.PointsMaterial;
-      material.opacity = Math.sin(time * 2) * 0.3 + 0.7; // Increased opacity
-      // Update color dynamically to ensure it's applied
+      material.opacity = Math.sin(time * 2) * 0.3 + 0.7;
       material.color.set(finalParticleColor);
     }
 
     // Base glow pulsing effect
     if (baseGlowRef.current) {
       const material = baseGlowRef.current.material as THREE.MeshBasicMaterial;
-      material.opacity = Math.sin(time * 1.5) * 0.2 + 0.4; // Pulsing opacity
+      material.opacity = Math.sin(time * 1.5) * 0.2 + 0.4;
       material.color.set(finalBaseGlowColor);
+    }
+
+    // Card background glow pulsing effect (from Card component)
+    if (cardGlowRef.current) {
+      const pulse = Math.sin(time * 4) * 0.1 + 0.5;
+      const material = cardGlowRef.current.material as THREE.MeshBasicMaterial;
+      material.opacity = pulse * 0.8;
+      material.color.set(finalCardGlowColor);
+      cardGlowRef.current.scale.setScalar(1 + Math.sin(time * 3) * 0.1); // Subtle size pulse
+    }
+
+    // Outline effect animation
+    if (outlineRef.current) {
+      const material = outlineRef.current.material as THREE.MeshBasicMaterial;
+      material.color.set(finalCardGlowColor);
     }
   });
 
@@ -127,11 +112,37 @@ export function SelectionEffects({
 
   return (
     <group renderOrder={10}>
+      {/* Card background glow effect (moved from Card component) */}
+      <mesh
+        ref={cardGlowRef}
+        geometry={cardGlowGeometry}
+        material={cardGlowMaterial}
+        position={[0, 2.2, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
+        renderOrder={0}
+      />
+
+      {/* Outline/border effect (moved from Card component) */}
+      <mesh
+        ref={outlineRef}
+        rotation={[0, 0, 0]}
+        position={[0, 0.01, 0]}
+        renderOrder={1}
+      >
+        <boxGeometry args={[1.02, 0.02, 0.91]} />
+        <meshBasicMaterial
+          color={finalCardGlowColor}
+          transparent
+          opacity={0.6}
+        />
+      </mesh>
+
+      {/* Base glow effect */}
       <mesh
         ref={baseGlowRef}
         rotation={[Math.PI / 2, 0, 0]}
         position={[0, 0.03, 0]}
-        renderOrder={1}
+        renderOrder={2}
       >
         <circleGeometry args={[1.4, 32]} />
         <meshBasicMaterial
@@ -143,11 +154,12 @@ export function SelectionEffects({
         />
       </mesh>
 
+      {/* Glow ring effect */}
       <mesh
         ref={glowRingRef}
         rotation={[Math.PI / 2, 0, 0]}
         position={[0, 0.08, 0]}
-        renderOrder={2}
+        renderOrder={3}
       >
         <ringGeometry args={[0.7, 0.9, 32]} />
         <meshBasicMaterial
@@ -160,7 +172,8 @@ export function SelectionEffects({
         />
       </mesh>
 
-      <points ref={particlesRef} position={[0, 1.8, 0]} renderOrder={3}>
+      {/* Particle effects */}
+      <points ref={particlesRef} position={[0, 1.8, 0]} renderOrder={4}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
