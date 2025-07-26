@@ -5,6 +5,5 @@ export * from "./Layout";
 export * from "./Card";
 export * from "./CardGrid";
 export * from "./CameraController";
-export * from "./InstallPWA";
 export * from "./NotificationSystem";
 export * from "./SelectionEffects";

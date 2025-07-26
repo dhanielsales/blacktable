@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { InstallPWA } from "../components/InstallPWA";
 import { Button } from "../components/Button";
 import { Link } from "../components/Link";
 import { Layout } from "../components/Layout";
@@ -14,9 +13,6 @@ function Home() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-20">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Install PWA Prompt */}
-          <InstallPWA />
-
           <h2 className="text-6xl font-bold mb-6 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
             Virtual Card Gaming Table
           </h2>

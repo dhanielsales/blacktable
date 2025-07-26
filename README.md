@@ -1,6 +1,6 @@
 # BlackTable - Virtual Card Gaming Platform
 
-A modern, 3D virtual card gaming platform built with React Three Fiber, TypeScript, and TanStack Router. Features interactive pentagon tables, real-time multiplayer capabilities, and PWA support.
+A modern, 3D virtual card gaming platform built with React Three Fiber, TypeScript, and TanStack Router. Features interactive pentagon tables and real-time multiplayer capabilities.
 
 ## 🚀 Features
 
@@ -19,13 +19,6 @@ A modern, 3D virtual card gaming platform built with React Three Fiber, TypeScri
 - **Help System**: Comprehensive tutorials and FAQ
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile
 
-### 📱 Progressive Web App (PWA)
-
-- **Install Prompt**: Add to home screen for native app experience
-- **Offline Support**: Play even without internet connection
-- **Service Worker**: Caches assets for fast loading
-- **Push Notifications**: Stay updated with game events
-
 ### 🎯 Performance Optimized
 
 - **Ref-based State**: Optimized hover detection to prevent re-renders
@@ -40,7 +33,6 @@ A modern, 3D virtual card gaming platform built with React Three Fiber, TypeScri
 - **Routing**: TanStack Router with file-based routing
 - **Styling**: Tailwind CSS with custom gradients
 - **State Management**: React Context API with refs
-- **PWA**: Service Worker, Web App Manifest
 - **Build Tool**: Vite for fast development
 
 ## 🎮 How to Play
@@ -56,7 +48,6 @@ A modern, 3D virtual card gaming platform built with React Three Fiber, TypeScri
 
 - **Room Play**: Create or join rooms for multiplayer sessions
 - **Settings**: Adjust graphics quality and game preferences
-- **Install App**: Add to home screen for native experience
 - **Help**: Access tutorials and controls reference
 
 ## 🚀 Getting Started
@@ -92,27 +83,13 @@ npm run preview      # Preview production build
 npm run lint         # Run ESLint
 ```
 
-## 📱 PWA Installation
-
-### Desktop
-
-1. Open the app in Chrome/Edge
-2. Look for the install icon in the address bar
-3. Click "Install BlackTable"
-
-### Mobile
-
-1. Open in Safari/Chrome mobile
-2. Tap the "Install" prompt on the homepage
-3. Add to home screen
-
 ## 🎯 Performance Features
 
 ### Optimizations Implemented
 
 - **Hover State Optimization**: Uses refs instead of state for hover detection
 - **Coordinate System**: Unified positioning across rotated tables
-- **Asset Caching**: Service worker caches 3D models and textures
+- **Asset Caching**: Fast loading of 3D models and textures
 - **Component Splitting**: Lazy loading for better initial load times
 
 ## 🛡️ Browser Support
@@ -128,7 +105,6 @@ npm run lint         # Run ESLint
 
 - WebGL 2.0 support
 - ES2020 features
-- Service Workers (for PWA)
 
 ---
 
